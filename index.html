@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Github Issues</title>
+</head>
+<body>
+  <h1 id="page-heading">Page number 1</h1>
+  <button id="load_prev">Load Previous</button>
+  <button id="load_next">Load Next</button>
+  <ol id="issue-list"></ol>
+
+  <script>
+    let currentPage = 1;
+
+    function getIssues(pageNumber) {
+      const url = `https://api.github.com/repositories/1296269/issues?page=${pageNumber}&per_page=5`;
+
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          displayIssues(data);
+          updatePageHeading(pageNumber);
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function displayIssues(issues) {
+      const issueList = document.getElementById('issue-list');
+      issueList.innerHTML = '';
+
+      issues.forEach(issue => {
+        const listItem = document.createElement('li');
+        listItem.textContent = issue.title;
+        issueList.appendChild(listItem);
+      });
+    }
+
+    function updatePageHeading(pageNumber) {
+      const pageHeading = document.getElementById('page-heading');
+      pageHeading.textContent = `Page number ${pageNumber}`;
+    }
+
+    document.getElementById('load_next').addEventListener('click', () => {
+      currentPage++;
+      getIssues(currentPage);
+    });
+
+    document.getElementById('load_prev').addEventListener('click', () => {
+      if (currentPage > 1) {
+        currentPage--;
+        getIssues(currentPage);
+      }
+    });
+
+    // Initial page load
+    getIssues(currentPage);
+  </script>
+</body>
+</html>
